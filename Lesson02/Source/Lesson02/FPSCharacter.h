@@ -28,7 +28,7 @@ public:
 		FVector MuzzleOffset;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-		TSubclassOf<class ABullet> ProjectileClass;
+		TSubclassOf<class ABullet> BulletClass;
 		
 protected:
 	// Called when the game starts or when spawned

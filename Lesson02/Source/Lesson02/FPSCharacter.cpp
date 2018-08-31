@@ -45,6 +45,7 @@ void AFPSCharacter::Tick(float DeltaTime)
 // Called to bind functionality to input
 void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	//	绑定各个控件到输入控制
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
@@ -82,5 +83,29 @@ void AFPSCharacter::JumpStop()
 void AFPSCharacter::Fire()
 {
 	UE_LOG(LogTemp, Log, TEXT("Fire"));
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+	FRotator MuzzleRotation = CameraRotation;
+
+	MuzzleRotation.Pitch += 10.0f;
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = Instigator;
+
+		//	Spawn the projectile at the muzzle;
+		ABullet* Bullet = World->SpawnActor<ABullet>(BulletClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+		if (Bullet)
+		{
+			//	Set the bullet initial trajectory
+			FVector LaunchDirection = MuzzleRotation.Vector();
+			Bullet->FireDirection(LaunchDirection);
+		}
+	}
 }
 

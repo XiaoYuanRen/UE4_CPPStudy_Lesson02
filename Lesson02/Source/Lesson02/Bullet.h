@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Bullet.generated.h"
@@ -23,9 +24,6 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Bullet")
 		UProjectileMovementComponent* ProjectileMovementComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Bullet")
-		UStaticMeshComponent* BulletMesh;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,4 +34,5 @@ public:
 
 	void FireDirection(const FVector& ShootDirection);
 	
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 };

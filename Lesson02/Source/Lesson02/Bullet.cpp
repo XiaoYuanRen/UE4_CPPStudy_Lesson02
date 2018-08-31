@@ -2,7 +2,6 @@
 
 #include "Bullet.h"
 
-
 // Sets default values
 ABullet::ABullet()
 {
@@ -11,6 +10,7 @@ ABullet::ABullet()
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
 	CollisionComponent->InitSphereRadius(15.0f);
+	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Bullet"));
 	RootComponent = CollisionComponent;
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -21,7 +21,7 @@ ABullet::ABullet()
 	ProjectileMovementComponent->bShouldBounce = true;
 	ProjectileMovementComponent->Bounciness = 0.3f;
 
-	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet"));
+	InitialLifeSpan = 3.0f;
 	
 }
 
@@ -42,5 +42,14 @@ void ABullet::Tick(float DeltaTime)
 void ABullet::FireDirection(const FVector & ShootDirection)
 {
 	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
+}
+
+void ABullet::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit)
+{
+	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Bullet hit --> s%"), *OtherActor->GetName());
+		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 10000.0f, Hit.ImpactPoint);
+	}
 }
 
